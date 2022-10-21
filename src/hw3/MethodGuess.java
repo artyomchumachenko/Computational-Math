@@ -22,48 +22,47 @@ public class MethodGuess {
         eqs.add(
                 new double[][]{{-6, -5, -3, -8}, {5, -1, -5, -4}, {-6, 0, 5, 5}, {-7, -2, 8, 5}}
         );
-        List<double[]> value = new LinkedList<>();
-        value.add(
+        List<double[]> rightSideEqs = new LinkedList<>();
+        rightSideEqs.add(
                 new double[]{4, 6, 12, 6}
         );
-        value.add(
+        rightSideEqs.add(
                 new double[]{-7, 5, 8, -29}
         );
-        value.add(
+        rightSideEqs.add(
                 new double[]{0, 9, -2, 37}
         );
-        value.add(
+        rightSideEqs.add(
                 new double[]{-8, 38, 47, -8}
         );
-        value.add(
+        rightSideEqs.add(
                 new double[]{101, 51, -53, -63}
         );
 
         /* Ввод данных */
 
-        int n = 4;
-        int m = 4;
-        int indexValue = 0;
-        double[][] A = new double[100][100];
-        double[] b = new double[100];
-        for (double[][] mas : eqs) {
-            double[] val = value.get(indexValue);
-            indexValue++;
-            for (int currI = 0; currI < n; currI++) {
-                A[currI] = new double[100];
-                for (int currJ = 0; currJ < m; currJ++) {
-                    A[currI][currJ] = mas[currI][currJ];
+        int numEquations = 4;
+        int numUnknowns = 4;
+        int valueIndex = 0;
+        double[][] A = new double[numUnknowns][numUnknowns];
+        double[] b = new double[numUnknowns];
+        for (double[][] mainMatrix : eqs) {
+            double[] rightSideOfMatrix = rightSideEqs.get(valueIndex);
+            valueIndex++;
+            for (int currI = 0; currI < numEquations; currI++) {
+                A[currI] = new double[numUnknowns];
+                for (int currJ = 0; currJ < numUnknowns; currJ++) {
+                    A[currI][currJ] = mainMatrix[currI][currJ];
 
                 }
-                b[currI] = val[currI];
+                b[currI] = rightSideOfMatrix[currI];
             }
             /* Метод Гаусса */
 
-            int N = n;
-            for (int p = 0; p < N; p++) {
+            for (int p = 0; p < numEquations; p++) {
 
                 int max = p;
-                for (int i = p + 1; i < N; i++) {
+                for (int i = p + 1; i < numEquations; i++) {
                     if (Math.abs(A[i][p]) > Math.abs(A[max][p])) {
                         max = i;
                     }
@@ -80,10 +79,10 @@ public class MethodGuess {
                     return;
                 }
 
-                for (int i = p + 1; i < N; i++) {
+                for (int i = p + 1; i < numEquations; i++) {
                     double alpha = A[i][p] / A[p][p];
                     b[i] -= alpha * b[p];
-                    for (int j = p; j < N; j++) {
+                    for (int j = p; j < numEquations; j++) {
                         A[i][j] -= alpha * A[p][j];
                     }
                 }
@@ -91,10 +90,10 @@ public class MethodGuess {
 
             // Обратный проход
 
-            double[] x = new double[N];
-            for (int i = N - 1; i >= 0; i--) {
+            double[] x = new double[numEquations];
+            for (int i = numEquations - 1; i >= 0; i--) {
                 double sum = 0.0;
-                for (int j = i + 1; j < N; j++) {
+                for (int j = i + 1; j < numEquations; j++) {
                     sum += A[i][j] * x[j];
                 }
                 x[i] = (b[i] - sum) / A[i][i];
@@ -103,10 +102,10 @@ public class MethodGuess {
             /* Вывод результатов */
 
             System.out.println("YES");
-            for (int i = 0; i < N; i++) {
+            for (int i = 0; i < numEquations; i++) {
                 System.out.printf("%.2f    ", x[i]);
             }
-            System.out.println("\n---------------------");
+            System.out.println("\numEquations---------------------");
         }
     }
 }
