@@ -1,5 +1,6 @@
 package hw3;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,75 +10,90 @@ public class SimpleDimple {
 
         List<double[][]> eqs = new LinkedList<>();
         eqs.add(
-                new double[][]{{12, -3, -1, 3}, {5, 20, 9, 1}, {6, -3, -21, -7}, {8, -7, 3, -27}}
+                new double[][]{{12, -3, -1, 3, -31}, {5, 20, 9, 1, 90}, {6, -3, -21, -7, 119}, {8, -7, 3, -27, 71}}
         );
         eqs.add(
-                new double[][]{{28, 9, -3, -7}, {-5, 21, -5, -3}, {-8, 1, -16, 5}, {0, -2, 5, 8}}
+                new double[][]{{28, 9, -3, -7, -159}, {-5, 21, -5, -3, 63}, {-8, 1, -16, 5, -45}, {0, -2, 5, 8, 24}}
         );
         eqs.add(
-                new double[][]{{21, 1, -8, 4}, {-9, -23, -2, 4}, {7, -1, -17, 6}, {8, 8, -4, -26}}
+                new double[][]{{21, 1, -8, 4, -119}, {-9, -23, -2, 4, 79}, {7, -1, -17, 6, -24}, {8, 8, -4, -26, -52}}
         );
         eqs.add(
-                new double[][]{{14, -4, -2, 3}, {-3, 23, -6, -9}, {-7, -8, 21, -5}, {-2, -2, 8, 18}}
-        );
-        List<double[]> value = new LinkedList<>();
-        value.add(
-                new double[]{-31, 90, 119, 71}
-        );
-        value.add(
-                new double[]{-159, 63, -45, 24}
-        );
-        value.add(
-                new double[]{-119, 79, -24, -52}
-        );
-        value.add(
-                new double[]{38, -195, -27, 142}
+                new double[][]{{14, -4, -2, 3, 38}, {-3, 23, -6, -9, -195}, {-7, -8, 21, -5, -27}, {-2, -2, 8, 18, 142}}
         );
 
-        double eps = 0.0000000001;
-        int valueIndex = 0;
-        for (double[][] mas : eqs) {
-            double x1 = 0, x2 = 0, x3 = 0, x4 = 0;
-            double[] x = new double[4];
-            int count;
-            double[] val = value.get(valueIndex);
-            valueIndex++;
+        // Solution
+        for (double[][] matx : eqs) {
+            simpleDimple(matx);
+        }
+    }
 
-            count = 0;
-            do {
-                x[0] = (
-                        val[0] - (mas[0][1] * x2 + mas[0][2] * x3 + mas[0][3] * x4) / mas[0][0]
-                );
-                x[1] = (
-                        val[1] - (mas[1][0] * x1 + mas[1][2] * x3 + mas[1][3] * x4) / mas[1][1]
-                );
-                x[2] = (
-                        val[2] - (mas[2][0] * x1 + mas[2][1] * x2 + mas[2][3] * x4) / mas[2][2]
-                );
-                x[3] = (
-                        val[3] - (mas[3][0] * x1 + mas[3][1] * x2 + mas[3][2] * x3) / mas[3][3]
-                );
-                count++;
-                if (
-                        (Math.abs(x[0] - x1) < eps)
-                                && (Math.abs(x[1] - x2) < eps)
-                                && (Math.abs(x[2] - x3) < eps)
-                                && (Math.abs(x[3] - x4) < eps)
-                ) {
+    private static void simpleDimple(double[][] fullMatrix) {
+        double[][] a; //fullMatrix;
+        double[] y; //freeChlens;
+        double[] x; // xSolutions;
+        int n = 4; // numOfEqs
+        int i, j;
+        y = new double[n];
+        a = new double[n][n];
+        for (i = 0; i < n; i++) {
+            for (j = 0; j <= n; j++) {
+                if (j != n) {
+                    a[i][j] = fullMatrix[i][j];
+                } else {
+                    y[i] = fullMatrix[i][j];
+                }
+            }
+        }
+//        for (i = 0; i < n; i++) {
+//            for (j = 0; j <= n; j++) {
+//                if (j != n) {
+//                    System.out.print(a[i][j] + "\t");
+//                } else {
+//                    System.out.print(y[i] + "\t");
+//                }
+//            }
+//            System.out.println();
+//        }
+        x = iter(a, y, n);
+        for (i = 0; i < n; i++) {
+            System.out.printf("%.2f\t", x[i]);
+        }
+        System.out.println("END");
+    }
+
+    private static double[] iter(double[][] a, double[] y, int n) {
+        double[] res = new double[n];
+        int i, j;
+        for (i = 0; i < n; i++) {
+            res[i] = y[i] / a[i][i];
+        }
+        double eps = 0.0000001;
+        double[] Xn = new double[n];
+        do {
+            for (i = 0; i < n; i++) {
+                Xn[i] = y[i] / a[i][i];
+                for (j = 0; j < n; j++) {
+                    if (i != j) {
+                        Xn[i] -= a[i][j] / a[i][i] * res[j];
+                    }
+                }
+            }
+
+            boolean flag = true;
+            for (i = 0; i < n - 1; i++) {
+                if (Math.abs(Xn[i] - res[i]) > eps) {
+                    flag = false;
                     break;
                 }
-                x1 = x[0];
-                x2 = x[1];
-                x3 = x[2];
-                x4 = x[3];
-            } while (true);
-            x1 = x[0];
-            x2 = x[1];
-            x3 = x[2];
-            x4 = x[3];
-            System.out.println(count + "    - count");
-            System.out.printf("%.2f    %.2f    %.2f    %.2f", x1, x2, x3, x4);
-            System.out.println("\n___________________");
-        }
+            }
+            for (i = 0; i < n; i++) {
+                res[i] = Xn[i];
+            }
+            if (flag) {
+                break;
+            }
+        } while (true);
+        return res;
     }
 }
