@@ -50,17 +50,12 @@ public class MethodGuess {
             double[] rightSideOfMatrix = rightSideEqs.get(valueIndex);
             valueIndex++;
             for (int currI = 0; currI < numEquations; currI++) {
-                A[currI] = new double[numUnknowns];
-                for (int currJ = 0; currJ < numUnknowns; currJ++) {
-                    A[currI][currJ] = mainMatrix[currI][currJ];
-
-                }
+                System.arraycopy(mainMatrix[currI], 0, A[currI], 0, numUnknowns);
                 b[currI] = rightSideOfMatrix[currI];
             }
             /* Метод Гаусса */
 
             for (int p = 0; p < numEquations; p++) {
-
                 int max = p;
                 for (int i = p + 1; i < numEquations; i++) {
                     if (Math.abs(A[i][p]) > Math.abs(A[max][p])) {

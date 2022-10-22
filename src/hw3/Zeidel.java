@@ -22,18 +22,21 @@ public class Zeidel {
         );
 
         for (double[][] matrix : eqs) {
-            System.out.println(Arrays.toString(findSolutionReq(matrix)));
-            System.out.println("______________________________________-");
+            double[] results = findSolution(matrix);
+            for (double res : results) {
+                System.out.printf("%.2f\t", res);
+            }
+            System.out.println("\n______________________________________-");
         }
     }
 
-    static double EPS = 10e-10;
+    static double EPS = 0.0000001;
 
     public static double[] findSolutionReq(double[][] matrix) {
-        return findSolution(matrix, EPS);
+        return findSolution(matrix);
     }
 
-    public static double[] findSolution(double[][] matrix, double eps) {
+    public static double[] findSolution(double[][] matrix) {
         int size = matrix.length;
         double[] previousVariableValues = new double[size];
         for (int i = 0; i < size; i++) {
@@ -78,7 +81,7 @@ public class Zeidel {
             }
 
             // Если необходимая точность достигнута, то завершаем процесс
-            if (error < EPS) {
+            if (error < Zeidel.EPS) {
                 break;
             }
 

@@ -1,6 +1,5 @@
 package hw3;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,65 +28,65 @@ public class SimpleDimple {
     }
 
     private static void simpleDimple(double[][] fullMatrix) {
-        double[][] a; //fullMatrix;
-        double[] y; //freeChlens;
-        double[] x; // xSolutions;
-        int n = 4; // numOfEqs
+        double[][] currFullMatrix;
+        double[] freeMembers;
+        double[] xSolutions;
+        int amountUnknowns = 4;
         int i, j;
-        y = new double[n];
-        a = new double[n][n];
-        for (i = 0; i < n; i++) {
-            for (j = 0; j <= n; j++) {
-                if (j != n) {
-                    a[i][j] = fullMatrix[i][j];
+        freeMembers = new double[amountUnknowns];
+        currFullMatrix = new double[amountUnknowns][amountUnknowns];
+        for (i = 0; i < amountUnknowns; i++) {
+            for (j = 0; j <= amountUnknowns; j++) {
+                if (j != amountUnknowns) {
+                    currFullMatrix[i][j] = fullMatrix[i][j];
                 } else {
-                    y[i] = fullMatrix[i][j];
+                    freeMembers[i] = fullMatrix[i][j];
                 }
             }
         }
-//        for (i = 0; i < n; i++) {
-//            for (j = 0; j <= n; j++) {
-//                if (j != n) {
-//                    System.out.print(a[i][j] + "\t");
+//        for (i = 0; i < amountUnknowns; i++) {
+//            for (j = 0; j <= amountUnknowns; j++) {
+//                if (j != amountUnknowns) {
+//                    System.out.print(currFullMatrix[i][j] + "\t");
 //                } else {
-//                    System.out.print(y[i] + "\t");
+//                    System.out.print(freeMembers[i] + "\t");
 //                }
 //            }
 //            System.out.println();
 //        }
-        x = iter(a, y, n);
-        for (i = 0; i < n; i++) {
-            System.out.printf("%.2f\t", x[i]);
+        xSolutions = iter(currFullMatrix, freeMembers, amountUnknowns);
+        for (i = 0; i < amountUnknowns; i++) {
+            System.out.printf("%.2f\t", xSolutions[i]);
         }
         System.out.println("END");
     }
 
-    private static double[] iter(double[][] a, double[] y, int n) {
-        double[] res = new double[n];
+    private static double[] iter(double[][] currFullMatrix, double[] freeMembers, int amountUnknowns) {
+        double[] res = new double[amountUnknowns];
         int i, j;
-        for (i = 0; i < n; i++) {
-            res[i] = y[i] / a[i][i];
+        for (i = 0; i < amountUnknowns; i++) {
+            res[i] = freeMembers[i] / currFullMatrix[i][i];
         }
         double eps = 0.0000001;
-        double[] Xn = new double[n];
+        double[] Xn = new double[amountUnknowns];
         do {
-            for (i = 0; i < n; i++) {
-                Xn[i] = y[i] / a[i][i];
-                for (j = 0; j < n; j++) {
+            for (i = 0; i < amountUnknowns; i++) {
+                Xn[i] = freeMembers[i] / currFullMatrix[i][i];
+                for (j = 0; j < amountUnknowns; j++) {
                     if (i != j) {
-                        Xn[i] -= a[i][j] / a[i][i] * res[j];
+                        Xn[i] -= currFullMatrix[i][j] / currFullMatrix[i][i] * res[j];
                     }
                 }
             }
 
             boolean flag = true;
-            for (i = 0; i < n - 1; i++) {
+            for (i = 0; i < amountUnknowns - 1; i++) {
                 if (Math.abs(Xn[i] - res[i]) > eps) {
                     flag = false;
                     break;
                 }
             }
-            for (i = 0; i < n; i++) {
+            for (i = 0; i < amountUnknowns; i++) {
                 res[i] = Xn[i];
             }
             if (flag) {
