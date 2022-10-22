@@ -100,7 +100,7 @@ public class MethodGuess {
             for (int i = 0; i < numEquations; i++) {
                 System.out.printf("%.2f    ", x[i]);
             }
-            System.out.println("\numEquations---------------------");
+            System.out.println("\n-----------------------------------------");
         }
     }
 }
