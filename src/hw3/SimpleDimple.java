@@ -58,12 +58,16 @@ public class SimpleDimple {
         for (i = 0; i < amountUnknowns; i++) {
             System.out.printf("%.2f\t", xSolutions[i]);
         }
+        System.out.println("Iter = " + amountIters);
         System.out.println("END");
     }
 
+    private static int amountIters;
     private static double[] iter(double[][] currFullMatrix, double[] freeMembers, int amountUnknowns) {
+        amountIters = 0;
         double[] res = new double[amountUnknowns];
         int i, j;
+        // нулевое приближение
         for (i = 0; i < amountUnknowns; i++) {
             res[i] = freeMembers[i] / currFullMatrix[i][i];
         }
@@ -82,6 +86,7 @@ public class SimpleDimple {
             boolean flag = true;
             for (i = 0; i < amountUnknowns - 1; i++) {
                 if (Math.abs(Xn[i] - res[i]) > eps) {
+                    amountIters++;
                     flag = false;
                     break;
                 }

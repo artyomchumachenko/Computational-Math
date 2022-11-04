@@ -1,6 +1,5 @@
 package hw3;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,11 +25,13 @@ public class Zeidel {
             for (double res : results) {
                 System.out.printf("%.2f\t", res);
             }
+            System.out.println("Iter = " + amountIters);
             System.out.println("\n______________________________________-");
         }
     }
 
     static double EPS = 0.0000001;
+    private static int amountIters;
 
     public static double[] findSolutionReq(double[][] matrix) {
         return findSolution(matrix);
@@ -42,14 +43,11 @@ public class Zeidel {
         for (int i = 0; i < size; i++) {
             previousVariableValues[i] = 0.0;
         }
-        // Будем выполнять итерационный процесс до тех пор,
-        // пока не будет достигнута необходимая точность
         while (true) {
             // Введем вектор значений неизвестных на текущем шаге
             double[] currentVariableValues = new double[size];
 
             // Посчитаем значения неизвестных на текущей итерации
-            // в соответствии с теоретическими формулами
             for (int i = 0; i < size; i++) {
                 // Инициализируем i-ую неизвестную значением
                 // свободного члена i-ой строки матрицы
@@ -84,6 +82,7 @@ public class Zeidel {
             if (error < Zeidel.EPS) {
                 break;
             }
+            amountIters++;
 
             // Переходим к следующей итерации, так
             // что текущие значения неизвестных
