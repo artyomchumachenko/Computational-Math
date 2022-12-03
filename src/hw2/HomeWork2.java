@@ -2,29 +2,36 @@ package hw2;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 public class HomeWork2 {
     public static final int A = 2;
-    public static final int K = 3;
-    public static final double EPS = Math.pow(10, -K);
+    public static final int epsDegree = 4;
+    public static final double EPS = Math.pow(10, -epsDegree);
 
-    public static final int BEGIN_SEGMENT = -10;
-    public static final int END_SEGMENT = 10;
-    public static final double STEP = 0.5;
-    public static final int CH_DER_NUM = 4;
+    public static final int START_POINT_OF_SEGMENT = -10;
+    public static final int FINISH_POINT_OF_SEGMENT = 10;
+    public static final double SEARCH_SEGMENT_STEP = 0.5;
+    public static final int AMOUNT_CH_PROIZVODNIH = 4;
 
     public static void main(String[] args) {
 
         LinkedList<Operationable1> equations1 = new LinkedList<>(); // Исходные уравнения задания 1
         LinkedList<Operationable21> equations21 = new LinkedList<>(); // Система уравнений задания 2.1
         LinkedList<Operationable22> equations22 = new LinkedList<>(); // Система уравнений задания 2.2
-        LinkedList<Operationable1> firstDerivatives1 = new LinkedList<>(); // Первые производные уравненений задания 1
-        LinkedList<Operationable21> chDerivatives21 = new LinkedList<>(); // Частные производные задания 2.1
-        LinkedList<Operationable22> chDerivatives22 = new LinkedList<>(); // Частные производные задания 2.2
+        LinkedList<Operationable1> derivatives1 = new LinkedList<>(); // Первые производные уравненений задания 1
+        LinkedList<Operationable21> derivatives21 = new LinkedList<>(); // Частные производные задания 2.1
+        LinkedList<Operationable22> derivatives22 = new LinkedList<>(); // Частные производные задания 2.2
         // Набор уравнений задания 1.1 в формате String для вывода
-        String[] equationsStr1 = new String[]{"x^3+x^2-x+1/2=0", "(e^x)/A=x+1", "x^3-20x+1=0", "2^x+x^2-2=0", "xln(x+2)-1+x^2=0", "(x^3)/A=Acos(x)"};
+        String[] equationsStr1 = new String[]{
+                "x^3+x^2-x+1/2=0",
+                "(e^x)/A=x+1",
+                "x^3-20x+1=0",
+                "2^x+x^2-2=0",
+                "xln(x+2)-1+x^2=0",
+                "(x^3)/A=Acos(x)"
+        };
 
+        // Уравнения из задания 1
         equations1.add(x -> Math.pow(x, 3) + Math.pow(x, 2) - x + 1. / 2);
         equations1.add(x -> Math.pow(Math.E, x) / A - x - 1);
         equations1.add(x -> Math.pow(x, 3) - 20 * x + 1);
@@ -32,92 +39,94 @@ public class HomeWork2 {
         equations1.add(x -> x * Math.log(x + 2) - 1 + Math.pow(x, 2));
         equations1.add(x -> Math.pow(x, 3) / A - A * Math.cos(x));
 
-        firstDerivatives1.add(x -> 3 * Math.pow(x, 2) + 2 * x - 1);
-        firstDerivatives1.add(x -> Math.pow(Math.E, x) / A - 1);
-        firstDerivatives1.add(x -> 3 * Math.pow(x, 2) - 20);
-        firstDerivatives1.add(x -> Math.pow(2, x) * Math.log(2) + 2 * x);
-        firstDerivatives1.add(x -> Math.log(x + 2) + x / (x + 2) + 2 * x);
-        firstDerivatives1.add(x -> 3 * Math.pow(x, 2) / A + A * Math.sin(x));
+        // Производные уравнений из задания 1
+        derivatives1.add(x -> 3 * Math.pow(x, 2) + 2 * x - 1);
+        derivatives1.add(x -> Math.pow(Math.E, x) / A - 1);
+        derivatives1.add(x -> 3 * Math.pow(x, 2) - 20);
+        derivatives1.add(x -> Math.pow(2, x) * Math.log(2) + 2 * x);
+        derivatives1.add(x -> Math.log(x + 2) + x / (x + 2) + 2 * x);
+        derivatives1.add(x -> 3 * Math.pow(x, 2) / A + A * Math.sin(x));
 
-        LinkedList<Point> listOfPints1 = new LinkedList<>();
-        LinkedList<Point> listOfPints2 = new LinkedList<>();
-        LinkedList<Point> listOfPints3 = new LinkedList<>();
-        LinkedList<Point> listOfPints4 = new LinkedList<>();
-        LinkedList<Point> listOfPints5 = new LinkedList<>();
-        LinkedList<Point> listOfPints6 = new LinkedList<>();
+        // Списки точек для каждого уровнения для локализации
+        LinkedList<Point> listOfPoints1 = new LinkedList<>();
+        LinkedList<Point> listOfPoints2 = new LinkedList<>();
+        LinkedList<Point> listOfPoints3 = new LinkedList<>();
+        LinkedList<Point> listOfPoints4 = new LinkedList<>();
+        LinkedList<Point> listOfPoints5 = new LinkedList<>();
+        LinkedList<Point> listOfPoints6 = new LinkedList<>();
 
+        // Общий список для взятия точек
         LinkedList<LinkedList<Point>> listOfListsPoints = new LinkedList<>();
-        listOfListsPoints.add(listOfPints1);
-        listOfListsPoints.add(listOfPints2);
-        listOfListsPoints.add(listOfPints3);
-        listOfListsPoints.add(listOfPints4);
-        listOfListsPoints.add(listOfPints5);
-        listOfListsPoints.add(listOfPints6);
+        listOfListsPoints.add(listOfPoints1);
+        listOfListsPoints.add(listOfPoints2);
+        listOfListsPoints.add(listOfPoints3);
+        listOfListsPoints.add(listOfPoints4);
+        listOfListsPoints.add(listOfPoints5);
+        listOfListsPoints.add(listOfPoints6);
 
+        // Приближенные значения X и Y
         double[] pointsX = new double[]{1.1, 1, 1, 0.6, -1};
         double[] PointsY = new double[]{0.4, 0.4, 0.5, 0.6, 1};
 
+        // Заполнение мапы, ключ - уравнение; значение - список с точками для него
         LinkedHashMap<String, LinkedList<Point>> mapOfEquations = new LinkedHashMap<>();
-        mapOfEquations.put(equationsStr1[0], listOfPints1);
-        mapOfEquations.put(equationsStr1[1], listOfPints2);
-        mapOfEquations.put(equationsStr1[2], listOfPints3);
-        mapOfEquations.put(equationsStr1[3], listOfPints4);
-        mapOfEquations.put(equationsStr1[4], listOfPints5);
-        mapOfEquations.put(equationsStr1[5], listOfPints6);
+        for (int i = 0; i < listOfListsPoints.size(); i++) {
+            mapOfEquations.put(equationsStr1[i], listOfListsPoints.get(i));
+        }
 
-        Parameter parameter1 = new Parameter(0.2, 1 / 0.6, 1. / 2);
-        Parameter parameter2 = new Parameter(0.4, 1 / 0.8, 1. / 2);
-        Parameter parameter3 = new Parameter(0.3, 1 / 0.2, 1. / 3);
-        Parameter parameter4 = new Parameter(0, 1 / 0.6, 1. / 2);
+        // Заполнение списка параметров для второго задания
         LinkedList<Parameter> parametersList = new LinkedList<>();
-        parametersList.add(parameter1);
-        parametersList.add(parameter2);
-        parametersList.add(parameter3);
-        parametersList.add(parameter4);
+        parametersList.add(new Parameter(0.2, 1 / 0.6, 1. / 2));
+        parametersList.add(new Parameter(0.4, 1 / 0.8, 1. / 2));
+        parametersList.add(new Parameter(0.3, 1 / 0.2, 1. / 3));
+        parametersList.add(new Parameter(0, 1 / 0.6, 1. / 2));
 
         equations21.add((x, y, a, alpha, betta) -> Math.tan(x * y + a) - Math.pow(x, 2));
         equations21.add((x, y, a, alpha, betta) -> Math.pow(x, 2) / alpha + Math.pow(y, 2) / betta - 1);
-        chDerivatives21.add((x, y, a, alpha, betta) -> y * (Math.pow(Math.tan(x * y + a), 2) + 1) - 2 * x);
-        chDerivatives21.add((x, y, a, alpha, betta) -> x * (Math.pow(Math.tan(x * y + a), 2)) + 1);
-        chDerivatives21.add((x, y, a, alpha, betta) -> 1 / alpha * 2 * x);
-        chDerivatives21.add((x, y, a, alpha, betta) -> 1 / betta * 2 * x);
+        derivatives21.add((x, y, a, alpha, betta) -> y * (Math.pow(Math.tan(x * y + a), 2) + 1) - 2 * x);
+        derivatives21.add((x, y, a, alpha, betta) -> x * (Math.pow(Math.tan(x * y + a), 2)) + 1);
+        derivatives21.add((x, y, a, alpha, betta) -> 1 / alpha * 2 * x);
+        derivatives21.add((x, y, a, alpha, betta) -> 1 / betta * 2 * x);
 
         equations22.add((x, y) -> Math.pow(x, 2) + Math.pow(y, 2) - 2);
         equations22.add((x, y) -> Math.exp(x - 1) + Math.pow(y, 3) - 2);
-        chDerivatives22.add((x, y) -> 2 * x);
-        chDerivatives22.add((x, y) -> 2 * y);
-        chDerivatives22.add((x, y) -> Math.exp(x - 1));
-        chDerivatives22.add((x, y) -> 3 * Math.pow(y, 2));
+        derivatives22.add((x, y) -> 2 * x);
+        derivatives22.add((x, y) -> 2 * y);
+        derivatives22.add((x, y) -> Math.exp(x - 1));
+        derivatives22.add((x, y) -> 3 * Math.pow(y, 2));
 
         System.out.println("----ЗАДАНИЕ 1----");
         findSegments(equations1, listOfListsPoints);
-        simpleIterationMethod(mapOfEquations, equations1, firstDerivatives1);
+        simpleIterationMethod(mapOfEquations, equations1, derivatives1);
 
         System.out.println("\n----ЗАДАНИЕ 2.1----\n");
         System.out.println("tg(xy + A) = x^2");
         System.out.println("x^2 / a^2 + y^2 / b^2 = 1");
-        newtonMethod(pointsX, PointsY, chDerivatives21, equations21, parametersList);
+        newtonMethod(pointsX, PointsY, derivatives21, equations21, parametersList);
 
         System.out.println("\n----ЗАДАНИЕ 2.2----\n");
         System.out.println("x1^2 + x2^2 - 2 = 0");
         System.out.println("e^(x1 - 2) + x2^3 - 2 = 0\n");
-        newtonMethodMod2(pointsX, PointsY, chDerivatives22, equations22);
+        newtonMethodMod2(pointsX, PointsY, derivatives22, equations22);
     }
 
     // Метод простой итерации (для задания 1)
-    public static void simpleIterationMethod(LinkedHashMap<String, LinkedList<Point>> mapOfEquations,
-                                             LinkedList<Operationable1> equations1,
-                                             LinkedList<Operationable1> firstDerivatives1) {
+    public static void simpleIterationMethod(
+            LinkedHashMap<String, LinkedList<Point>> mapOfEquations,
+            LinkedList<Operationable1> equations1,
+            LinkedList<Operationable1> derivatives1
+    ) {
+        // номер текущего уравнения
         int equationNumber = 0;
-        for (Map.Entry<String, LinkedList<Point>> entry : mapOfEquations.entrySet()) {
+        for (String key : mapOfEquations.keySet()) {
             System.out.println();
-            System.out.println(entry.getKey());
-            for (int i = 0; i < entry.getValue().size(); ++i) {
-                System.out.println("\nТочка " + (i + 1) + "\n");
+            System.out.println(key);
+            for (int i = 0; i < mapOfEquations.get(key).size(); ++i) {
+                System.out.println("\nРешение " + (i + 1) + "\n");
                 double x1, d;
                 int iterationNum = 1;
-                double x0 = entry.getValue().get(i).getX();
-                double lambda = 1 / firstDerivatives1.get(equationNumber).calculate(x0);
+                double x0 = mapOfEquations.get(key).get(i).getX();
+                double lambda = 1 / derivatives1.get(equationNumber).calculate(x0);
                 do {
                     x1 = x0;
                     x0 = x1 - lambda * equations1.get(equationNumber).calculate(x1);
@@ -133,11 +142,13 @@ public class HomeWork2 {
     }
 
     // Локализация корней для МПИ
-    public static void findSegments(LinkedList<Operationable1> equations1, LinkedList<LinkedList<Point>> listOfListsPoints) {
+    public static void findSegments(
+            LinkedList<Operationable1> equations1, LinkedList<LinkedList<Point>> listOfListsPoints
+    ) {
         for (int i = 0; i < equations1.size(); ++i) {
-            for (double j = BEGIN_SEGMENT; j <= END_SEGMENT; j += STEP) {
-                if (equations1.get(i).calculate(j) * equations1.get(i).calculate(j + STEP) < 0) {
-                    listOfListsPoints.get(i).add(new Point((j + j + STEP) / 2));
+            for (double j = START_POINT_OF_SEGMENT; j <= FINISH_POINT_OF_SEGMENT; j += SEARCH_SEGMENT_STEP) {
+                if (equations1.get(i).calculate(j) * equations1.get(i).calculate(j + SEARCH_SEGMENT_STEP) < 0) {
+                    listOfListsPoints.get(i).add(new Point((j + j + SEARCH_SEGMENT_STEP) / 2));
                 } else if (equations1.get(i).calculate(j) == 0) {
                     listOfListsPoints.get(i).add(new Point((j)));
                 }
@@ -146,23 +157,52 @@ public class HomeWork2 {
     }
 
     // Поиск обратной матрицы для метода Ньютона
-    public static void obrMatrix(double[][] a) {
-        double[][] firstMatrix = new double[2][2];
-        firstMatrix[0][0] = a[0][0];
-        firstMatrix[0][1] = a[0][1];
-        firstMatrix[1][0] = a[1][0];
-        firstMatrix[1][1] = a[1][1];
-        double det = firstMatrix[0][0] * firstMatrix[1][1] - firstMatrix[0][1] * firstMatrix[1][0];
-        a[0][0] = firstMatrix[1][1] / det;
-        a[1][1] = firstMatrix[0][0] / det;
-        a[0][1] = -firstMatrix[0][1] / det;
-        a[1][0] = -firstMatrix[1][0] / det;
+    public static void obrMatrix(
+            double[][] a, int N
+    ) {
+        double temp;
+        double[][] E = new double[N][N];
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++) {
+                E[i][j] = 0f;
+                if (i == j)
+                    E[i][j] = 1f;
+            }
+        for (int k = 0; k < N; k++) {
+            temp = a[k][k];
+            for (int j = 0; j < N; j++) {
+                a[k][j] /= temp;
+                E[k][j] /= temp;
+            }
+            for (int i = k + 1; i < N; i++) {
+                temp = a[i][k];
+                for (int j = 0; j < N; j++) {
+                    a[i][j] -= a[k][j] * temp;
+                    E[i][j] -= E[k][j] * temp;
+                }
+            }
+        }
+        for (int k = N - 1; k > 0; k--) {
+            for (int i = k - 1; i >= 0; i--) {
+                temp = a[i][k];
+                for (int j = 0; j < N; j++) {
+                    a[i][j] -= a[k][j] * temp;
+                    E[i][j] -= E[k][j] * temp;
+                }
+            }
+        }
+        for (int i = 0; i < N; i++)
+            System.arraycopy(E[i], 0, a[i], 0, N);
     }
 
     // Метод Ньютона (для задания 2.1)
-    public static void newtonMethod(double[] pointsX, double[] PointsY, LinkedList<Operationable21> chDerivatives21,
-                                    LinkedList<Operationable21> equations21, LinkedList<Parameter> parametersList) {
-        for (int i = 0; i < CH_DER_NUM; ++i) {
+    public static void newtonMethod(
+            double[] pointsX, double[] PointsY,
+            LinkedList<Operationable21> derivatives21,
+            LinkedList<Operationable21> equations21,
+            LinkedList<Parameter> parametersList
+    ) {
+        for (int i = 0; i < AMOUNT_CH_PROIZVODNIH; ++i) {
             System.out.println("\nПараметры " + (i + 1));
             double x = pointsX[i];
             double y = PointsY[i];
@@ -175,29 +215,29 @@ public class HomeWork2 {
                 derivativeNumber = 0;
                 for (int j = 0; j < a.length; ++j) {
                     for (int k = 0; k < a[j].length; ++k) {
-                        a[j][k] = chDerivatives21.get(derivativeNumber).calculate(x, y, parametersList.get(i).getAValue(), parametersList.get(i)
+                        a[j][k] = derivatives21.get(derivativeNumber).calculate(x, y, parametersList.get(i).getAValue(), parametersList.get(i)
                                 .getAlphaSquaredValue(), parametersList.get(i).getBetaSquaredValue());
                         ++derivativeNumber;
                     }
                 }
 
-                obrMatrix(a);
-                dx = -a[0][0] * equations21.get(0).calculate(x, y, parametersList.get(i).getAValue(), parametersList.get(i)
+                obrMatrix(a, 2);
+                dx = a[0][0] * equations21.get(0).calculate(x, y, parametersList.get(i).getAValue(), parametersList.get(i)
                         .getAlphaSquaredValue(), parametersList.get(i).getBetaSquaredValue())
-                        + -a[0][1] * equations21.get(1).calculate(x, y, parametersList.get(i).getAValue(), parametersList
+                        + a[0][1] * equations21.get(1).calculate(x, y, parametersList.get(i).getAValue(), parametersList
                         .get(i).getAlphaSquaredValue(), parametersList.get(i).getBetaSquaredValue());
-                dy = -a[1][0] * equations21.get(0).calculate(x, y, parametersList.get(i).getAValue(), parametersList.get(i)
+                dy = a[1][0] * equations21.get(0).calculate(x, y, parametersList.get(i).getAValue(), parametersList.get(i)
                         .getAlphaSquaredValue(), parametersList.get(i).getBetaSquaredValue())
-                        + -a[1][1] * equations21.get(1).calculate(x, y, parametersList.get(i).getAValue(), parametersList
+                        + a[1][1] * equations21.get(1).calculate(x, y, parametersList.get(i).getAValue(), parametersList
                         .get(i).getAlphaSquaredValue(), parametersList.get(i).getBetaSquaredValue());
-                x = x + dx;
-                y = y + dy;
+                x = x - dx;
+                y = y - dy;
                 b[0] = equations21.get(0).calculate(x, y, parametersList.get(i).getAValue(), parametersList.get(i)
                         .getAlphaSquaredValue(), parametersList.get(i).getBetaSquaredValue());
                 b[1] = equations21.get(1).calculate(x, y, parametersList.get(i).getAValue(), parametersList.get(i)
                         .getAlphaSquaredValue(), parametersList.get(i).getBetaSquaredValue());
                 norm1 = Math.sqrt(b[0] * b[0] + b[1] * b[1]);
-                norm2 = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+                norm2 = Math.sqrt(x * x + y * y);
                 System.out.println("Итерация №" + iterationNum);
                 System.out.println("x = " + String.format("%.8f", x));
                 System.out.println("y = " + String.format("%.8f", y));
@@ -207,28 +247,31 @@ public class HomeWork2 {
     }
 
     // Метод Ньютона (для задания 2.2)
-    public static void newtonMethodMod2(double[] pointsX, double[] PointsY, LinkedList<Operationable22> chDerivatives22,
-                                        LinkedList<Operationable22> equations22) {
-        double x = pointsX[CH_DER_NUM];
-        double y = PointsY[CH_DER_NUM];
+    public static void newtonMethodMod2(
+            double[] pointsX, double[] PointsY,
+            LinkedList<Operationable22> derivatives22,
+            LinkedList<Operationable22> equations22
+    ) {
+        double x = pointsX[AMOUNT_CH_PROIZVODNIH];
+        double y = PointsY[AMOUNT_CH_PROIZVODNIH];
         int iterationNum = 1;
         double[][] a = new double[2][2];
         double dx, dy, norm1, norm2;
         double[] b = new double[2];
         do {
-            a[0][0] = chDerivatives22.get(0).calculate(x, y);
-            a[0][1] = chDerivatives22.get(0).calculate(x, y);
-            a[1][0] = chDerivatives22.get(2).calculate(x, y);
-            a[1][1] = chDerivatives22.get(3).calculate(x, y);
-            obrMatrix(a);
-            dx = -a[0][0] * equations22.get(0).calculate(x, y) + -a[0][1] * equations22.get(1).calculate(x, y);
-            dy = -a[1][0] * equations22.get(0).calculate(x, y) + -a[1][1] * equations22.get(1).calculate(x, y);
-            x = x + dx;
-            y = y + dy;
+            a[0][0] = derivatives22.get(0).calculate(x, y);
+            a[0][1] = derivatives22.get(0).calculate(x, y);
+            a[1][0] = derivatives22.get(2).calculate(x, y);
+            a[1][1] = derivatives22.get(3).calculate(x, y);
+            obrMatrix(a, 2);
+            dx = a[0][0] * equations22.get(0).calculate(x, y) + a[0][1] * equations22.get(1).calculate(x, y);
+            dy = a[1][0] * equations22.get(0).calculate(x, y) + a[1][1] * equations22.get(1).calculate(x, y);
+            x = x - dx;
+            y = y - dy;
             b[0] = equations22.get(0).calculate(x, y);
             b[1] = equations22.get(1).calculate(x, y);
             norm1 = Math.sqrt(b[0] * b[0] + b[1] * b[1]);
-            norm2 = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+            norm2 = Math.sqrt(x * x + y * y);
             System.out.println("Итерация №" + iterationNum);
             System.out.println("x1 = " + String.format("%.8f", x));
             System.out.println("x2 = " + String.format("%.8f", y));
