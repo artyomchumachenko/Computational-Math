@@ -1,6 +1,6 @@
 package hw4;
 
-public class MinimumResiduals {
+public class SpeedyDescent {
 
     private static final int MAX_AMOUNT_OPERATION = 50000;
 
@@ -18,7 +18,7 @@ public class MinimumResiduals {
 
         do {
             rValues = subtracting(multiply(initialMatrix, currentXValues), freeMembers);
-            paramT = getTauForResidual(initialMatrix, rValues);
+            paramT = getTauForGradient(initialMatrix, rValues);
             prevXValues = currentXValues;
             currentXValues = subtracting(currentXValues, findResidualVector(paramT, rValues));
             norm = IterationMethodsMain.findNorm(numOfNorm, size, currentXValues, prevXValues);
@@ -29,11 +29,11 @@ public class MinimumResiduals {
         System.out.println(printResult(currentXValues, epsilon, iterationsNumber));
     }
 
-    private double getTauForResidual(double[][] matrix, double[] residual) {
+    private double getTauForGradient(double[][] matrix, double[] residual) {
         double[] Ar = multiply(matrix, residual);
         double Arr = multiply(Ar, residual);
-        double ArAr = multiply(Ar, Ar);
-        return Arr / ArAr;
+        double rr = multiply(residual, residual);
+        return rr / Arr;
     }
 
     // Произведение двух матриц
@@ -78,8 +78,12 @@ public class MinimumResiduals {
     public String printResult(double[] previousVariableValues, String epsilon, int iterationsNumber) {
         StringBuilder result = new StringBuilder();
         for (double qst : previousVariableValues) {
+//            result.append("[").append(Math.round(qst)).append("]; ");
             result.append("[").append(qst).append("]; ");
         }
-        return result + " ε = " + epsilon + " итераций: " + iterationsNumber;
+        if (iterationsNumber != 500) {
+            return result + " ε = " + epsilon + " итераций: " + iterationsNumber;
+        }
+        return null;
     }
 }
